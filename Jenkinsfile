@@ -82,5 +82,14 @@ pipeline {
                 sh "docker build -t vendor-frontend:${env.BUILD_NUMBER} ./frontend"
             }
         }
+
+        stage('Stage 9: Trivy Image Scan') {
+            steps {
+                echo "Starting Stage 9: Trivy Image Scan..."
+                // Scans the newly built Docker images for vulnerabilities
+                sh "trivy image vendor-backend:${env.BUILD_NUMBER} > trivy_backend_image_report.txt"
+                sh "trivy image vendor-frontend:${env.BUILD_NUMBER} > trivy_frontend_image_report.txt"
+            }
+        }
     }
 }
