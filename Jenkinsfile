@@ -65,5 +65,13 @@ pipeline {
                 }
             }
         }
+
+        stage('Stage 7: Trivy Filesystem Scan') {
+            steps {
+                echo "Starting Stage 7: Trivy Filesystem Scan..."
+                // Scans the current directory for vulnerabilities and outputs to a text file
+                sh 'trivy fs . > trivy_fs_report.txt'
+            }
+        }
     }
 }
