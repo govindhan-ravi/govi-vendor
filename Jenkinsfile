@@ -73,5 +73,14 @@ pipeline {
                 sh 'trivy fs . > trivy_fs_report.txt'
             }
         }
+
+        stage('Stage 8: Docker Build') {
+            steps {
+                echo "Starting Stage 8: Docker Build..."
+                // Build images and tag them with the Jenkins Build Number
+                sh "docker build -t vendor-backend:${env.BUILD_NUMBER} ./backend"
+                sh "docker build -t vendor-frontend:${env.BUILD_NUMBER} ./frontend"
+            }
+        }
     }
 }
