@@ -121,5 +121,19 @@ pipeline {
                 sh 'helm lint ./helm/vendor-management'
             }
         }
+
+        stage('Stage 12: EKS Authentication') {
+            steps {
+                echo "Starting Stage 12: EKS Authentication..."
+                // Uses AWS credentials to connect Jenkins to your EKS cluster
+                withCredentials([usernamePassword(credentialsId: 'aws-credentials', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
+                    sh '''
+                    export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+                    export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+                    aws eks update-kubeconfig --region us-east-1 --name vendor-cluster
+                    '''
+                }
+            }
+        }
     }
 }
