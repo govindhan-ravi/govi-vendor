@@ -125,31 +125,21 @@ pipeline {
         stage('Stage 12: EKS Authentication') {
             steps {
                 echo "Starting Stage 12: EKS Authentication..."
-                // Uses AWS credentials to connect Jenkins to your EKS cluster
-                withCredentials([usernamePassword(credentialsId: 'aws-credentials', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
-                    sh '''
-                    export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-                    export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-                    aws eks update-kubeconfig --region us-east-1 --name vendor-cluster
-                    '''
-                }
+                // Uses the EC2 IAM Instance Role (Jenkins-EKS-Admin) - no credentials needed!
+                sh 'aws eks update-kubeconfig --region us-east-1 --name vendor-cluster'
             }
         }
 
         stage('Stage 13: Helm Deploy') {
             steps {
                 echo "Starting Stage 13: Helm Deploy..."
-                withCredentials([usernamePassword(credentialsId: 'aws-credentials', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
-                    // Re-generate kubeconfig and deploy in same shell so credentials carry over
-                    sh '''
-                    export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
-                    export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
-                    aws eks update-kubeconfig --region us-east-1 --name vendor-cluster
-                    helm upgrade --install vendor-management ./helm/vendor-management \
-                      --set image.repository=govindhan1234 \
-                      --set image.tag=''' + env.BUILD_NUMBER + '''
-                    '''
-                }
+                // Uses the EC2 IAM Instance Role directly - no credentials needed!
+                sh '''
+                aws eks update-kubeconfig --region us-east-1 --name vendor-cluster
+                helm upgrade --install vendor-management ./helm/vendor-management \
+                  --set image.repository=govindhan1234 \
+                  --set image.tag=''' + env.BUILD_NUMBER + '''
+                '''
             }
         }
     }
