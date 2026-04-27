@@ -51,9 +51,17 @@ pipeline {
             }
             steps {
                 echo "Starting Stage 5: SonarQube Scan..."
-                // Uses the 'sonar-server' configuration from Jenkins Global System settings
                 withSonarQubeEnv('sonar-server') {
                     sh "${SCANNER_HOME}/bin/sonar-scanner -Dsonar.projectKey=vendor-management-system -Dsonar.projectName=Vendor-Management -Dsonar.sources=."
+                }
+            }
+        }
+
+        stage('Stage 6: Quality Gate') {
+            steps {
+                echo "Starting Stage 6: Quality Gate..."
+                timeout(time: 1, unit: 'HOURS') {
+                    waitForQualityGate abortPipeline: true
                 }
             }
         }
