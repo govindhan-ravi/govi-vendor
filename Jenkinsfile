@@ -113,5 +113,13 @@ pipeline {
                 }
             }
         }
+
+        stage('Stage 11: Helm Lint') {
+            steps {
+                echo "Starting Stage 11: Helm Lint..."
+                // Verify the newly created Helm charts are valid
+                sh 'helm lint ./helm/vendor-management'
+            }
+        }
     }
 }
