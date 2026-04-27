@@ -135,5 +135,21 @@ pipeline {
                 }
             }
         }
+
+        stage('Stage 13: Helm Deploy') {
+            steps {
+                echo "Starting Stage 13: Helm Deploy..."
+                withCredentials([usernamePassword(credentialsId: 'aws-credentials', passwordVariable: 'AWS_SECRET_ACCESS_KEY', usernameVariable: 'AWS_ACCESS_KEY_ID')]) {
+                    sh """
+                    export AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+                    export AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+                    helm upgrade --install vendor-management ./helm/vendor-management \
+                      --set image.repository=govindhan1234 \
+                      --set image.tag=${env.BUILD_NUMBER}
+                    """
+                }
+            }
+        }
     }
 }
+
