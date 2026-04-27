@@ -7,7 +7,7 @@ pipeline {
     }
 
     stages {
-        stage('Git Checkout') {
+        stage('Stage 1: Git Checkout') {
             steps {
                 echo "Starting Stage 1: Git Checkout..."
                 checkout scm
@@ -15,11 +15,10 @@ pipeline {
             }
         }
 
-        stage('ESLint (Code Quality Check)') {
+        stage('Stage 2: ESLint (Code Quality Check)') {
             steps {
                 echo "Starting Stage 2: ESLint..."
                 dir('frontend') {
-                    // Install dependencies and run linting
                     sh 'npm ci'
                     sh 'npm run lint'
                 }
@@ -27,7 +26,7 @@ pipeline {
             }
         }
 
-        stage('Frontend Tests') {
+        stage('Stage 3: Frontend Tests') {
             steps {
                 echo "Starting Stage 3: Frontend Tests..."
                 dir('frontend') {
@@ -36,7 +35,7 @@ pipeline {
             }
         }
 
-        stage('Backend Tests') {
+        stage('Stage 4: Backend Tests') {
             steps {
                 echo "Starting Stage 4: Backend Tests..."
                 dir('backend') {
