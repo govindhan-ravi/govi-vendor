@@ -47,14 +47,14 @@ pipeline {
 
         stage('Stage 5: SonarQube Scan') {
             environment {
-                // Requires 'SonarQube Scanner' plugin and a tool named 'sonar-scanner' configured in Jenkins
                 SCANNER_HOME = tool 'sonar-scanner'
             }
             steps {
                 echo "Starting Stage 5: SonarQube Scan..."
-                // For a real SonarQube server, you would wrap this in withSonarQubeEnv('your-server-name')
-                // This basic command assumes SonarQube is running locally or configured globally.
-                sh "${SCANNER_HOME}/bin/sonar-scanner -Dsonar.projectKey=vendor-management-system -Dsonar.projectName=Vendor-Management -Dsonar.sources=."
+                // Uses the 'sonar-server' configuration from Jenkins Global System settings
+                withSonarQubeEnv('sonar-server') {
+                    sh "${SCANNER_HOME}/bin/sonar-scanner -Dsonar.projectKey=vendor-management-system -Dsonar.projectName=Vendor-Management -Dsonar.sources=."
+                }
             }
         }
     }
