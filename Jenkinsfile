@@ -91,5 +91,27 @@ pipeline {
                 sh "trivy image vendor-frontend:${env.BUILD_NUMBER} > trivy_frontend_image_report.txt"
             }
         }
+
+        stage('Stage 10: Docker Push') {
+            steps {
+                echo "Starting Stage 10: Docker Push..."
+                // Uses the 'docker-hub' credentials we created in Jenkins
+                withCredentials([usernamePassword(credentialsId: 'docker-hub', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                    sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
+                    
+                    // Tag images with your Docker Hub username
+                    sh "docker tag vendor-backend:${env.BUILD_NUMBER} ${DOCKER_USERNAME}/vendor-backend:${env.BUILD_NUMBER}"
+                    sh "docker tag vendor-frontend:${env.BUILD_NUMBER} ${DOCKER_USERNAME}/vendor-frontend:${env.BUILD_NUMBER}"
+                    sh "docker tag vendor-backend:${env.BUILD_NUMBER} ${DOCKER_USERNAME}/vendor-backend:latest"
+                    sh "docker tag vendor-frontend:${env.BUILD_NUMBER} ${DOCKER_USERNAME}/vendor-frontend:latest"
+                    
+                    // Push images to Docker Hub
+                    sh "docker push ${DOCKER_USERNAME}/vendor-backend:${env.BUILD_NUMBER}"
+                    sh "docker push ${DOCKER_USERNAME}/vendor-frontend:${env.BUILD_NUMBER}"
+                    sh "docker push ${DOCKER_USERNAME}/vendor-backend:latest"
+                    sh "docker push ${DOCKER_USERNAME}/vendor-frontend:latest"
+                }
+            }
+        }
     }
 }
