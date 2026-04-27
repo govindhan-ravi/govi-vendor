@@ -142,6 +142,30 @@ pipeline {
                 '''
             }
         }
+
+        stage('Stage 14: Prometheus Monitoring') {
+            steps {
+                echo "Starting Stage 14: Prometheus Monitoring..."
+                // Install/Update Prometheus using Helm
+                sh '''
+                helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+                helm repo update
+                helm upgrade --install prometheus prometheus-community/prometheus --set server.persistentVolume.enabled=false
+                '''
+            }
+        }
+
+        stage('Stage 15: Grafana Dashboard') {
+            steps {
+                echo "Starting Stage 15: Grafana Dashboard..."
+                // Install/Update Grafana using Helm
+                sh '''
+                helm repo add grafana https://grafana.github.io/helm-charts
+                helm repo update
+                helm upgrade --install grafana grafana/grafana --set persistence.enabled=false
+                '''
+            }
+        }
     }
 }
 
