@@ -26,5 +26,24 @@ pipeline {
                 echo "ESLint checks passed successfully."
             }
         }
+
+        stage('Frontend Tests') {
+            steps {
+                echo "Starting Stage 3: Frontend Tests..."
+                dir('frontend') {
+                    sh 'npm test'
+                }
+            }
+        }
+
+        stage('Backend Tests') {
+            steps {
+                echo "Starting Stage 4: Backend Tests..."
+                dir('backend') {
+                    sh 'npm install'
+                    sh 'npm test'
+                }
+            }
+        }
     }
 }
